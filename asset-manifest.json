@@ -1,0 +1,11 @@
+{
+  "files": {
+    "main.js": "/K_Coin/static/js/main.c23b5e0a.js",
+    "static/media/Loading.svg": "/K_Coin/static/media/Loading.4198a7db67b7015658c2cf833a1fefb0.svg",
+    "index.html": "/K_Coin/index.html",
+    "main.c23b5e0a.js.map": "/K_Coin/static/js/main.c23b5e0a.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.c23b5e0a.js"
+  ]
+}
