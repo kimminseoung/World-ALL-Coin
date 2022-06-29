@@ -2,7 +2,9 @@ import { fetchCoinHistory } from "../api";
 import { useQuery } from "react-query";
 import ApexChart from "react-apexcharts";
 import { ReactComponent as LoadingIcon } from "../assets/Loading.svg";
-
+interface ChartProps {
+  coinId: string;
+}
 interface IHistoryCal {
   time_open: string;
   time_close: string;
@@ -13,13 +15,9 @@ interface IHistoryCal {
   volume: number;
   market_cap: number;
 }
-interface ChartProps {
-  coinId: string;
-}
 
 function ChartTab({ coinId }: ChartProps) {
   const { isLoading, data } = useQuery<IHistoryCal[]>(["ohlcv", coinId], () => fetchCoinHistory(coinId));
-  console.log(data);
   return (
     <div>
       {isLoading ? (

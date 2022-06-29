@@ -10,24 +10,46 @@ const Title = styled.h1`
 `;
 const Container = styled.div`
   padding: 0 20px;
-  max-width: 480px;
+  max-width: 1024px;
   margin: 0 auto;
 `;
-const CoinList = styled.ul``;
+const CoinList = styled.ul`
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+`;
 const Coin = styled.li`
+  margin: 0 5px;
   background-color: #eee;
   color: ${props => props.theme.bgColor};
   border-radius: 15px;
   margin-bottom: 10px;
+  width: 120px;
+  height: 120px;
   a {
-    padding: 20px;
-    transition: color 0.2s ease-in;
+    width: 100%;
+    height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    span {
+      transition: 0.3s;
+      opacity: 0;
+      padding-top: 5px;
+      text-align: center;
+      line-height: 18px;
+    }
   }
   &:hover {
+    background-color: #aaa;
     a {
-      color: ${props => props.theme.accentColor};
+      color: ${props => props.theme.white};
+      font-weight: 600;
+      span {
+        opacity: 1;
+        padding-top: 15px;
+      }
     }
   }
 `;
@@ -41,13 +63,12 @@ const Loading = styled.span`
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   font-size: 100px;
 `;
 const Img = styled.img`
   width: 35px;
   height: 35px;
-  margin-right: 10px;
 `;
 interface ICoin {
   id: string;
@@ -58,6 +79,7 @@ interface ICoin {
   is_active: boolean;
   type: string;
 }
+
 function Coins() {
   const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
   return (
@@ -70,7 +92,7 @@ function Coins() {
       </Header>
       {isLoading ? (
         <Loading>
-          <LoadingIcon fill="transparent"/>
+          <LoadingIcon fill='transparent' />
         </Loading>
       ) : (
         <CoinList>
@@ -83,7 +105,7 @@ function Coins() {
                 }}
               >
                 <Img src={`https://cryptocurrencyliveprices.com/img/${coin.id}.png`} />
-                {coin.name} &rarr;
+                <span>{coin.name}</span>
               </Link>
             </Coin>
           ))}

@@ -1,62 +1,97 @@
-// import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams, useLocation, Switch, useRouteMatch, useHistory } from "react-router";
 import { Link, Route } from "react-router-dom";
 import { useQuery } from "react-query";
 import Price from "./Price";
-import { infoData, priceData } from "./../api";
 import ChartTab from "./Chart";
+import { infoData, priceData } from "./../api";
 import { Helmet } from "react-helmet";
 import { ReactComponent as LoadingIcon } from "../assets/Loading.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
 
 const Container = styled.div`
-  padding: 0 20px;
-  max-width: 480px;
+  min-width: 480px;
+  max-width: 1024px;
   margin: 0 auto;
+  padding-top: 6%;
 `;
 const Header = styled.header`
-  height: 11vh;
+  height: 10vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 5%;
+  flex-direction: column;
+  margin-bottom: 5%;
 `;
 const Title = styled.h1`
   color: ${props => props.theme.accentColor};
   font-size: 48px;
+  small {
+    font-size: 24px;
+  }
 `;
-const OverView = styled.div`
-  margin-top: 3%;
+const CoinWrapper = styled.div`
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  padding: 30px;
+  & > div:first-child {
+    width: 40%;
+  }
+  & > div:last-child {
+    width: calc(100% - 40%);
+    padding-left: 5%;
+  }
 `;
+const OverView = styled.div``;
 const OverInfo = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
   background-color: ${props => props.theme.accentColor};
   border-radius: 10px;
-  padding: 10px;
+  padding: 13px;
   text-align: center;
+  small {
+    margin-top: 8px;
+    font-size: 10px;
+    color: ${props => props.theme.bgColor};
+  }
   span {
-    text-transform: uppercase;
-    font-size: 11px;
+    display: inline-block;
+    width: 25%;
+    margin: 8px;
+    font-size: 14px;
+    color: ${props => props.theme.bgColor};
     b {
       margin-top: 5px;
       text-transform: capitalize;
       font-size: 13px;
       display: block;
       letter-spacing: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: 0.6s;
+      &:hover {
+        overflow: visible;
+      }
     }
   }
 `;
 const Describtion = styled.div`
   margin: 20px 0;
-  color: ${props => props.theme.white}; ;
+  color: ${props => props.theme.textColor};
+  line-height: 20px;
+  h5 {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
 `;
 const Tabs = styled.div`
+  height: 10vh;
   display: flex;
-  margin: 10px 0;
-  justify-content: center;
+  align-items: center;
 `;
 const Tab = styled.div<{ isActive: boolean }>`
   a {
@@ -65,19 +100,19 @@ const Tab = styled.div<{ isActive: boolean }>`
     margin: 0 6px;
     border-radius: 8px;
     transition: 0.3s;
-    background-color: ${props => (props.isActive ? props.theme.textColor : props.theme.accentColor)};
-    color: ${props => (props.isActive ? props.theme.accentColor : props.theme.textColor)};
-    &:hover {
-      color: #fff;
-    }
+    background-color: ${props => (props.isActive ? props.theme.accentColor : props.theme.bgColor)};
+    color: ${props => (props.isActive ? props.theme.bgColor : props.theme.textColor)};
+    border: 1px solid #eee;
+    /* &:hover {
+      color: crimson;
+    } */
   }
 `;
 const Back = styled.div`
   position: absolute;
   top: 5%;
-  left: 6%;
-  width: 100px;
-  height: 30px;
+  left: 5%;
+  margin: 0 10px;
   font-size: 36px;
   background-color: ${props => props.theme.bgColor};
   .back {
@@ -86,9 +121,10 @@ const Back = styled.div`
   }
   .back:hover {
     transform: translateX(-3px);
-    color: ${props => props.theme.white};
+    color: ${props => props.theme.accentColor};
   }
 `;
+
 interface RouteState {
   name: string;
 }
@@ -168,72 +204,100 @@ function Coin() {
   const priceMatch = useRouteMatch("/:coinId/price");
   const chartMatch = useRouteMatch("/:coinId/chart");
   const history = useHistory();
-  const { isLoading: infoLoading, data: infodata } = useQuery<InfoData>(["info", coinId], () => infoData(coinId)); // use to React_Query
+  const { isLoading: infoLoading, data: infodata } = useQuery<InfoData>(["info", coinId], () => infoData(coinId));
   const { isLoading: priceLoading, data: pricedata } = useQuery<PriceData>(["price", coinId], () => priceData(coinId), { refetchInterval: 3000 }); // use to React_Query
   const loading = infoLoading || priceLoading;
+  console.log(infodata);
+  console.log(pricedata);
+
   return (
     <Container>
       <Helmet>
         <title>{state?.name ? state.name : loading ? "Loading..." : infodata?.name}</title>
       </Helmet>
-      <Header>
-        <Title>{state?.name ? state.name : loading ? "Loading..." : infodata?.name}</Title>
-      </Header>
       <Back
         onClick={() => {
           history.push("/");
         }}
       >
-        <FontAwesomeIcon className="back" icon={faLeftLong} />
+        <FontAwesomeIcon className='back' icon={faLeftLong} />
       </Back>
       {loading ? (
-        <LoadingIcon fill='transparent' />
+        <LoadingIcon fill='transparent' width={600} height={600} />
       ) : (
-        <>
-          <OverView>
-            <OverInfo>
-              <span>
-                rank
-                <b>{infodata?.rank}</b>
-              </span>
-              <span>
-                symbol
-                <b>{infodata?.symbol}</b>
-              </span>
-              <span>
-                price
-                <b>${pricedata?.quotes.USD.price.toFixed(2)}</b>
-              </span>
-            </OverInfo>
-            <Describtion>{infodata?.description}</Describtion>
-            <OverInfo>
-              <span>
-                total_supply
-                <b>{pricedata?.total_supply}</b>
-              </span>
-              <span>
-                max_supply
-                <b>{pricedata?.max_supply}</b>
-              </span>
-            </OverInfo>
+        <CoinWrapper>
+          <div>
+            <Header>
+              <Title>
+                {state?.name ? state.name : loading ? "Loading..." : infodata?.name}
+                <small>({infodata?.symbol})</small>
+              </Title>
+            </Header>
+            <OverView>
+              <OverInfo>
+                <span>
+                  순위
+                  <b>{infodata?.rank}</b>
+                </span>
+                <span>
+                  구조
+                  <b>{infodata?.org_structure}</b>
+                </span>
+                <span>
+                  가격(달러)
+                  <b>{Number(pricedata?.quotes.USD.price).toLocaleString("en-us", { maximumFractionDigits: 2, style: "currency", currency: "USD" })}</b>
+                </span>
+                <span>
+                  시총
+                  <b>{Number(pricedata?.quotes.USD.market_cap).toLocaleString("en-us", { maximumFractionDigits: 0, style: "currency", currency: "USD" })}</b>
+                </span>
+                <span>
+                  첫 발행일
+                  <b>{infodata?.started_at==null?"알 수 없음":String(infodata?.started_at).substring(10, 0)}</b>
+                </span>
+                <span>
+                  마지막 발행일
+                  <b>{String(infodata?.last_data_at).substring(10, 0)}</b>
+                </span>
+                <span>
+                  총 유통량
+                  <b>{Number(pricedata?.total_supply).toLocaleString("ko-KR")}</b>
+                </span>
+                <span>
+                  최대 발행량
+                  <b>{Number(pricedata?.max_supply) === 0 ? "미정" : Number(pricedata?.max_supply).toLocaleString("ko-KR")}</b>
+                </span>
+                <span>
+                  현재까지 유통량
+                  <b>{Number(pricedata?.circulating_supply).toLocaleString("ko-KR")}</b>
+                </span>
+                <small>※ 가격(달러) 소수점 두번째 까지출력</small>
+              </OverInfo>
+              <Describtion>
+                <h5>설명</h5>
+                {infodata?.description}
+              </Describtion>
+            </OverView>
+          </div>
+          <div>
             <Tabs>
-              <Tab isActive={priceMatch !== null}>
-                <Link to={`/${coinId}/price`}>가격</Link>
-              </Tab>
               <Tab isActive={chartMatch !== null}>
-                <Link to={`/${coinId}/chart`}>차트</Link>
+                <Link to={`/${coinId}/chart`}>Chart</Link>
+              </Tab>
+              <Tab isActive={priceMatch !== null}>
+                <Link to={`/${coinId}/price`}>Price</Link>
               </Tab>
             </Tabs>
-          </OverView>
-          <Switch>
-            <Route path={`/:coinId/price`}>
-              <Price />
-            </Route>
-            <Route path={`/:coinId/chart`}>
-              <ChartTab coinId={coinId} />
-            </Route>
-          </Switch>
-        </>
+            <Switch>
+              <Route path={`/:coinId/price`}>
+                <Price coinId={coinId} />
+              </Route>
+              <Route path={`/:coinId/chart`}>
+                <ChartTab coinId={coinId} />
+              </Route>
+            </Switch>
+          </div>
+        </CoinWrapper>
       )}
     </Container>
   );
