@@ -1,9 +1,14 @@
 import Router from "./Router";
 import { createGlobalStyle } from "styled-components";
-import { ReactQueryDevtools } from "react-query/devtools";
+import { Dark, light } from "./Theme";
+import { ThemeProvider } from "styled-components";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "./etc/atoms";
+import DarkMode from "./component/DarkMode";
+
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Kdam+Thmor+Pro&display=swap');
-  html, body, div, span, applet, object, iframe,
+ html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
@@ -59,12 +64,13 @@ a {
 `;
 
 function App() {
+  const isDark = useRecoilValue(isDarkAtom);
   return (
-    <>
+    <ThemeProvider theme={isDark ? Dark : light}>
       <GlobalStyle />
-      <Router />
-      <ReactQueryDevtools initialIsOpen={true} />
-    </>
+			<Router />
+			<DarkMode/>
+    </ThemeProvider>
   );
 }
 
